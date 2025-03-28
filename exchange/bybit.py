@@ -91,36 +91,51 @@ class Bybit:
         return free_balance_by_base
 
     def get_amount(self, order_info: MarketOrder) -> float:
+        # amount와 percent가 모두 설정된 경우 예외
         if order_info.amount is not None and order_info.percent is not None:
             raise error.AmountPercentBothError()
+
+        # 직접 지정된 수량이 있으면 그대로 사용
         elif order_info.amount is not None:
             if order_info.is_contract:
                 current_price = self.get_price(order_info.unified_symbol)
                 result = (order_info.amount * current_price) // order_info.contract_size
             else:
                 result = order_info.amount
+
+        # 퍼센트 지정된 경우
         elif order_info.percent is not None:
-            if order_info.is_entry or (order_info.is_spot and order_info.is_buy):
-                free_quote = self.get_balance(order_info.quote)
-                cash = free_quote * (order_info.percent - 0.5) / 100
-                current_price = self.get_price(order_info.unified_symbol)
-                result = cash / current_price
-            elif self.order_info.is_close:
-                if order_info.is_contract:
-                    free_amount = self.get_futures_position(order_info.unified_symbol)
-                    result = free_amount * order_info.percent / 100
-                else:
-                    free_amount = self.get_futures_position(order_info.unified_symbol)
-                    result = free_amount * order_info.percent / 100
-            elif order_info.is_spot and order_info.is_sell:
-                free_amount = self.get_balance(order_info.base)
+            result = self._get_percent_amount(order_info)
+
+        # 아무것도 없으면 잔고의 90% 사용
+        else:
+            order_info.percent = 90.0
+            result = self._get_percent_amount(order_info)
+
+        return float(
+            self.client.amount_to_precision(order_info.unified_symbol, result)
+        )
+
+    def _get_percent_amount(self, order_info: MarketOrder) -> float:
+        if order_info.is_entry or (order_info.is_spot and order_info.is_buy):
+            free_quote = self.get_balance(order_info.quote)
+            cash = free_quote * (order_info.percent - 0.5) / 100
+            current_price = self.get_price(order_info.unified_symbol)
+            result = cash / current_price
+        elif order_info.is_close:
+            if order_info.is_contract:
+                free_amount = self.get_futures_position(order_info.unified_symbol)
                 result = free_amount * order_info.percent / 100
-            result = float(
-                self.client.amount_to_precision(order_info.unified_symbol, result)
-            )
-            order_info.amount_by_percent = result
+            else:
+                free_amount = self.get_futures_position(order_info.unified_symbol)
+                result = free_amount * order_info.percent / 100
+        elif order_info.is_spot and order_info.is_sell:
+            free_amount = self.get_balance(order_info.base)
+            result = free_amount * order_info.percent / 100
         else:
             raise error.AmountPercentNoneError()
+
+        order_info.amount_by_percent = result
         return result
 
     def set_leverage(self, leverage: float, symbol: str):
@@ -176,7 +191,6 @@ class Bybit:
         self,
         order_info: MarketOrder,
     ):
-        # 비용주문
         buy_amount = self.get_amount(order_info)
         order_info.amount = buy_amount
         order_info.price = self.get_price(order_info.unified_symbol)
@@ -232,8 +246,6 @@ class Bybit:
                 delay=0.1,
                 instance=self,
             )
-            # order_amount = self.get_order_amount(result["id"], order_info)
-            # result["amount"] = order_amount
             return result
         except Exception as e:
             raise error.OrderError(e, order_info)
@@ -276,8 +288,6 @@ class Bybit:
                 delay=0.1,
                 instance=self,
             )
-            # order_amount = self.get_order_amount(result["id"], order_info)
-            # result["amount"] = order_amount
             return result
         except Exception as e:
             raise error.OrderError(e, self.order_info)

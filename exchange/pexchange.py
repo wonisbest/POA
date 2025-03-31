@@ -26,6 +26,9 @@ class Exchange(BaseModel):
     BINANCE: Binance | None = None
     BYBIT: Bybit | None = None
     BITGET: Bitget | None = None
+    BITGET1: Bitget | None = None
+    BITGET2: Bitget | None = None
+    BITGET3: Bitget | None = None
     OKX: Okx | None = None
     KIS1: KoreaInvestment | None = None
     KIS2: KoreaInvestment | None = None

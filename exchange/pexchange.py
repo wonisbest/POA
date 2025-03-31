@@ -43,6 +43,15 @@ def get_exchange(exchange_name: str, kis_number=None):
     global payload
     if exchange_name in CRYPTO_EXCHANGES:
         KEY, SECRET, PASSPHRASE = check_key(exchange_name)
+
+        if exchange_name == "BITGET":
+            for i in range(1,4)
+                key = settings.dict.get(f"BITGET_KEY{i}")
+                secret = settings.dict().get(f"BITGET_SECRET{i}")
+                passphrase = settings.dict().get(f"BITGET_PASSPHRASE{i}")
+                label = f"BITGET{i}"
+                if key and secret and passphrase and not payload.get(label):
+                    payload[label] = Biget(key, secret, passphrase)
         if not payload.get(exchange_name):
             if exchange_name in ("BITGET", "OKX"):
                 payload |= {

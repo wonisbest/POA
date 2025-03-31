@@ -52,6 +52,8 @@ def get_exchange(exchange_name: str, kis_number=None):
                 label = f"BITGET{i}"
                 if key and secret and passphrase and not payload.get(label):
                     payload[label] = Biget(key, secret, passphrase)
+        return Exchange(**payload)
+        
         if not payload.get(exchange_name):
             if exchange_name in ("BITGET", "OKX"):
                 payload |= {

@@ -105,9 +105,6 @@ class Settings(BaseSettings):
     BITGET3_KEY: str | None = None
     BITGET3_SECRET: str | None = None
     BITGET3_PASSPHRASE: str | None = None
-    BITGET4_KEY: str | None = None
-    BITGET4_SECRET: str | None = None
-    BITGET4_PASSPHRASE: str | None = None
     OKX_KEY: str | None = None
     OKX_SECRET: str | None = None
     OKX_PASSPHRASE: str | None = None

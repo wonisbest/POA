@@ -147,9 +147,23 @@ async def order(order_info: MarketOrder, background_tasks: BackgroundTasks):
     order_result = None
     try:
         exchange_name = order_info.exchange
+
+        if exchange_name.upper() == "BITGET":
+            from exchange.pexchange import get_exchange
+            ex = get_exchange("BITGET")
+
+            for i in range(1,4):
+                bot = getattr(ex,f"BITGET{i}", None)
+                if not bot:
+                    continue
+                bot.init_info(order_info)
+                result = bot.market_entry(order_info)
+                background_tasks.add_task(log,f"BITGET{i}", result, order_info)
+            return {"result": "success"}
+
+        
         bot = get_bot(exchange_name, order_info.kis_number)
         bot.init_info(order_info)
-
         if bot.order_info.is_crypto:
             if bot.order_info.is_entry:
                 order_result = bot.market_entry(bot.order_info)

@@ -5,7 +5,7 @@ from pathlib import Path
 from enum import Enum
 from devtools import debug
 
-CRYPTO_LITERAL = Literal["BINANCE", "UPBIT", "BYBIT", "BITGET", "OKX"]
+CRYPTO_LITERAL = Literal["BINANCE", "UPBIT", "BYBIT", "BITGET","BITGET1","BITGET2","BITGET3", "OKX"]
 
 
 STOCK_LITERAL = Literal[
@@ -21,6 +21,9 @@ EXCHANGE_LITERAL = Literal[
     "UPBIT",
     "BYBIT",
     "BITGET",
+    "BITGET1",
+    "BITGET2",
+    "BITGET3",
     "OKX",
     "KRX",
     "NASDAQ",
@@ -56,7 +59,7 @@ def find_env_file():
 env_path = find_env_file()
 
 
-CRYPTO_EXCHANGES = ("BINANCE", "UPBIT", "BYBIT", "BITGET", "OKX")
+CRYPTO_EXCHANGES = ("BINANCE", "UPBIT", "BYBIT", "BITGET","BITGET1","BITGET2","BITGET3", "OKX")
 
 STOCK_EXCHANGES = (
     "KRX",
@@ -65,17 +68,20 @@ STOCK_EXCHANGES = (
     "AMEX",
 )
 
-COST_BASED_ORDER_EXCHANGES = ("UPBIT", "BYBIT", "BITGET")
+COST_BASED_ORDER_EXCHANGES = ("UPBIT", "BYBIT", "BITGET","BITGET1","BITGET2","BITGET3")
 
 NO_ORDER_AMOUNT_OUTPUT_EXCHANGES = (
     "BITGET",
+    "BITGET1",
+    "BITGET2",
+    "BITGET3",
     "KRX",
     "NASDAQ",
     "NYSE",
     "AMEX",
 )
 
-# "BITGET", "KRX", "NASDAQ", "AMEX", "NYSE")
+# "BITGET","BITGET1","BITGET2","BITGET3", "KRX", "NASDAQ", "AMEX", "NYSE")
 
 
 crypto_futures_code = ("PERP", ".P")

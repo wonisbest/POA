@@ -96,6 +96,9 @@ class Settings(BaseSettings):
     BINANCE_SECRET: str | None = None
     BYBIT_KEY: str | None = None
     BYBIT_SECRET: str | None = None
+    BITGET_KEY: str | None = None
+    BITGET_SECRET: str | None = None
+    BITGET_PASSPHRASE: str | None = None
     BITGET1_KEY: str | None = None
     BITGET1_SECRET: str | None = None
     BITGET1_PASSPHRASE: str | None = None

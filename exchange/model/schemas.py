@@ -5,7 +5,7 @@ from pathlib import Path
 from enum import Enum
 from devtools import debug
 
-CRYPTO_LITERAL = Literal["BINANCE", "UPBIT", "BYBIT", "BITGET","BITGET1","BITGET2","BITGET3", "OKX"]
+CRYPTO_LITERAL = Literal["BINANCE", "UPBIT", "BYBIT", "BITGET", "BITGET1","BITGET2","BITGET3" ,"OKX"]
 
 
 STOCK_LITERAL = Literal[
@@ -57,7 +57,7 @@ def find_env_file():
 
 
 env_path = find_env_file()
-
+print(">>> ENV PATH: ", env_path)
 
 CRYPTO_EXCHANGES = ("BINANCE", "UPBIT", "BYBIT", "BITGET","BITGET1","BITGET2","BITGET3", "OKX")
 
@@ -242,7 +242,7 @@ class OrderRequest(BaseModel):
                 values[key] = value.replace(',', '')
             if values[key] in ("NaN", ""):
                 values[key] = None
-            
+
 
         values |= get_extra_order_info(values)
 

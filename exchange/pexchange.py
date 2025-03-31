@@ -102,6 +102,9 @@ def get_bot(
 
 
 def check_key(exchange_name):
+    if exchange_name == "BITGET":
+        exchange_name = "BITGET1"
+        
     settings_dict = settings.dict()
     if exchange_name in CRYPTO_EXCHANGES:
         key = settings_dict.get(exchange_name + "_KEY")

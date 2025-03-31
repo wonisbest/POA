@@ -16,7 +16,7 @@ import pendulum
 import time
 from devtools import debug
 from loguru import logger
-
+from exchange.model.schemas import Settings
 
 from .model import CRYPTO_EXCHANGES, STOCK_EXCHANGES, MarketOrder
 
@@ -49,16 +49,15 @@ def get_exchange(exchange_name: str, kis_number=None):
 
         if exchange_name == "BITGET":
             for i in range(1,4):
-                key = settings.dict().get(f"BITGET_KEY{i}")
-                secret = settings.dict().get(f"BITGET_SECRET{i}")
-                passphrase = settings.dict().get(f"BITGET_PASSPHRASE{i}")
+                key = settings.dict().get(f"BITGET{i}_KEY")
+                secret = settings.dict().get(f"BITGET{i}_SECRET")
+                passphrase = settings.dict().get(f"BITGET{i}_PASSPHRASE")
+                print(f">>> BITGET{i}_KEY: {key} | Secret: {secret} | PASSPHRASE: {passphrase}")
                 label = f"BITGET{i}"
                 if key and secret and passphrase and not payload.get(label):
-                    payload[label] = Biget(key, secret, passphrase)
-        return Exchange(**payload)
-        
-        if not payload.get(exchange_name):
-            if exchange_name in ("BITGET", "OKX"):
+                    payload[label] = Bitget(key, secret, passphrase)
+        elif not payload.get(exchange_name):
+            if exchange_name in ("OKX"):
                 payload |= {
                     exchange_name: globals()[exchange_name.title()](
                         KEY, SECRET, PASSPHRASE
@@ -90,7 +89,7 @@ def get_exchange(exchange_name: str, kis_number=None):
 
 def get_bot(
     exchange_name: Literal[
-        "BINANCE", "UPBIT", "BYBIT", "BITGET", "KRX", "NASDAQ", "NYSE", "AMEX", "OKX"
+        "BINANCE", "UPBIT", "BYBIT", "BITGET","BITGET1","BITGET2","BITGET3", "KRX", "NASDAQ", "NYSE", "AMEX", "OKX"
     ],
     kis_number=None,
 ) -> Binance | Upbit | Bybit | Bitget | KoreaInvestment | Okx:
@@ -104,8 +103,8 @@ def get_bot(
 def check_key(exchange_name):
     if exchange_name == "BITGET":
         exchange_name = "BITGET1"
-        
-    settings_dict = settings.dict()
+    settings_instance = Settings()
+    settings_dict = settings_instance.dict()
     if exchange_name in CRYPTO_EXCHANGES:
         key = settings_dict.get(exchange_name + "_KEY")
         secret = settings_dict.get(exchange_name + "_SECRET")
@@ -168,14 +167,14 @@ def retry(
                                     positionSide = "LONG"
                                 elif order_info.is_close:
                                     positionSide = "SHORT"
-                                    
+
                             elif order_info.side == "sell":
                                 if order_info.is_entry:
                                     positionSide = "SHORT"
                                 elif order_info.is_close:
                                     positionSide = "LONG"
-                                    
-    
+
+
                             params = {"positionSide": positionSide}
                         elif instance.position_mode == "hedge":
                             instance.position_mode = "one-way"
@@ -297,7 +296,7 @@ def retry(
                             if order_info.is_entry:
                                 if order_info.is_futures:
                                     if order_info.is_buy:
-                                        trade_side = "Open" 
+                                        trade_side = "Open"
                                     else:
                                         trade_side = "open"
                                     new_params = { "tradeSide": trade_side, "marginMode": margin_mode}
@@ -307,7 +306,7 @@ def retry(
                                 elif order_info.side == "buy":
                                     final_side = "sell"
                                 new_params = {"reduceOnly": True, "tradeSide":"close"}
-                            
+
                             args = tuple(
                                 new_params if i == 5 else arg
                                 for i, arg in enumerate(args)
